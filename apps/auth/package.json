@@ -6,13 +6,6 @@
     "private": true,
     "license": "UNLICENSED",
     "scripts": {
-      "test:e2e": "cucumber-js"
-    },
-    "dependencies": {
-
-    },
-    "devDependencies": {
-      
-    }    
-  }
-  
+        "test:e2e": "cucumber-js --tags 'not @ignore'"
+    }
+}
