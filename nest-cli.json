@@ -9,7 +9,7 @@
   },
   "monorepo": true,
   "root": "apps/auth",
-  "projects": {    
+  "projects": {
     "auth": {
       "type": "application",
       "root": "apps/auth",

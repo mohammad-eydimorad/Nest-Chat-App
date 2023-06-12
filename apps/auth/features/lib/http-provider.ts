@@ -7,7 +7,6 @@ import {
 import { Test } from '@nestjs/testing';
 import { AuthController } from '../../src/controllers';
 import { AuthService } from '../../src/auth.service';
-
 export class HttpProvider {
   static async createProvider(
     module:
@@ -25,6 +24,6 @@ export class HttpProvider {
     const app = moduleRef.createNestApplication();
     app.useGlobalPipes(new ValidationPipe());
     await app.init();
-    return app.getHttpServer();
+    return app;
   }
 }
