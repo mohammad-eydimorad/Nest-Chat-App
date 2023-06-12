@@ -2,14 +2,12 @@ Feature: User Registration
   As a new user
   I want to register for an account
   So that I can start using the chat application
-  @ignore
+
   Scenario: Successful user registration
     Given the user is on the registration page
     When the user provides valid registration details
     And submits the registration form
     Then the user should be redirected to the login page
-    # And receive a confirmation email
-
   
   Scenario Outline: Failed user registration
     Given the user is on the registration page

@@ -1,6 +1,6 @@
 import * as request from 'supertest';
 import { AuthModule } from '../../../src/auth.module';
-import { UserRegistrationDto } from '../../../src/dtos';
+import { UserRegistrationDto } from '../../../src/dto';
 import expect from 'expect';
 import { HttpProvider } from '../../lib';
 import { defineFeature, loadFeature } from 'jest-cucumber';
@@ -25,7 +25,7 @@ defineFeature(feature, (test) => {
   };
   const whenSubmitsTheRegistrationForm = (when) => {
     when('submits the registration form', async () => {
-      // result = await request(httpServer).post('/register').send(user);
+      result = await request(app.getHttpServer()).post('/register').send(user);
     });
   };
 
@@ -66,8 +66,8 @@ defineFeature(feature, (test) => {
     whenSubmitsTheRegistrationForm(when);
 
     then(/^(.*) message should be displayed$/, (error: string) => {
-      // expect(result.status).toEqual(400);
-      // expect(result.body.message).toContain(error);
+      expect(result.status).toEqual(400);
+      expect(result.body.message).toContain(error);
     });
 
     then('the user should stay on the registration page', () => {
