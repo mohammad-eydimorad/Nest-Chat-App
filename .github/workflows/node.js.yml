@@ -8,10 +8,13 @@ on:
     branches: [ "master" ]
   pull_request:
     branches: [ "master" ]
-
+env:
+  JWT_EXPIRATION: 3600
+  JWT_SECRET: TESTTESTTEST
+  MONGODB_URI: IN_MEMORY
 jobs:
   build:
-
+    
     runs-on: ubuntu-latest
 
     strategy:
