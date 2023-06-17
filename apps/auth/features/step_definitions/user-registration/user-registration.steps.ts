@@ -1,8 +1,8 @@
 import * as request from 'supertest';
 import { AuthModule } from '../../../src/auth.module';
-import { UserRegistrationDto } from '../../../src/dto';
-import expect from 'expect';
-import { HttpProvider } from '../../lib';
+import { CreateUserRequest } from '../../../src/users/dto/create-user.request';
+import mongoose from 'mongoose';
+import { HttpProvider } from '@app/common';
 import { defineFeature, loadFeature } from 'jest-cucumber';
 const feature = loadFeature('../../user-registration.feature', {
   loadRelativePath: true,
@@ -10,22 +10,21 @@ const feature = loadFeature('../../user-registration.feature', {
 });
 defineFeature(feature, (test) => {
   let app: any;
-  let user: UserRegistrationDto;
+  let user: CreateUserRequest;
   let result: request.Response;
   beforeEach(async () => {
     app = await HttpProvider.createProvider(AuthModule);
   });
-  afterAll(async () => {
-    await app.close();
-  });
   const givenTheUserIsOnRegistrationPage = (given) => {
     given('the user is on the registration page', async () => {
-      user = new UserRegistrationDto();
+      user = new CreateUserRequest();
     });
   };
   const whenSubmitsTheRegistrationForm = (when) => {
     when('submits the registration form', async () => {
-      result = await request(app.getHttpServer()).post('/register').send(user);
+      result = await request(app.getHttpServer())
+        .post('/auth/users')
+        .send(user);
     });
   };
 
@@ -33,6 +32,7 @@ defineFeature(feature, (test) => {
     givenTheUserIsOnRegistrationPage(given);
 
     when('the user provides valid registration details', () => {
+      user.name = 'valid_name';
       user.email = 'admin@gmail.com';
       user.password = '123456789';
     });
@@ -41,14 +41,10 @@ defineFeature(feature, (test) => {
 
     then('the user should be redirected to the login page', () => {
       expect(result.status).toEqual(201);
-      expect(result.body).toEqual(
-        expect.objectContaining({
-          email: user.email,
-        }),
-      );
-      expect(result.body._id).toMatch(
-        /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i,
-      );
+      expect(result.body.name).toEqual(user.name);
+      expect(result.body.email).toEqual(user.email);
+      expect(result.body).not.toHaveProperty('password');
+      expect(result.body._id).toMatch(/^(?=[a-f\d]{24}$)(\d+[a-f]|[a-f]+\d)/i);
     });
   });
 
@@ -56,8 +52,9 @@ defineFeature(feature, (test) => {
     givenTheUserIsOnRegistrationPage(given);
 
     when(
-      /^the user provides registration details with (.*) and (.*)$/,
-      (email: string, password: string) => {
+      /^the user provides registration details with (.*), (.*) and (.*)$/,
+      (name: string, email: string, password: string) => {
+        user.name = name;
         user.email = email;
         user.password = password;
       },
@@ -71,7 +68,14 @@ defineFeature(feature, (test) => {
     });
 
     then('the user should stay on the registration page', () => {
+      expect(result.body.jwt_token).toBeFalsy();
+      expect(result.body.jwt_refresh_token).toBeFalsy();
       return;
     });
-  }, 1000);
+  });
+
+  afterAll(async () => {
+    await app.close();
+    await mongoose.disconnect();
+  });
 });

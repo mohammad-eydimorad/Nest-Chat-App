@@ -5,8 +5,6 @@ import {
   ValidationPipe,
 } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
-import { AuthController } from '../../src/controllers';
-import { AuthService } from '../../src/auth.service';
 export class HttpProvider {
   static async createProvider(
     module:
@@ -16,8 +14,6 @@ export class HttpProvider {
       | ForwardReference<any>,
   ) {
     const moduleRef = await Test.createTestingModule({
-      controllers: [AuthController],
-      providers: [AuthService],
       imports: [module],
     }).compile();
 
