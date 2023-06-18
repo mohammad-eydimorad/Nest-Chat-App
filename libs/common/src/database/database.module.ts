@@ -12,7 +12,6 @@ import { MongooseModule } from '@nestjs/mongoose';
           };
         } else {
           return {
-            connectionName: (new Date().getTime() * Math.random()).toString(16),
             uri: configService.get<string>('MONGODB_URI'),
           };
         }

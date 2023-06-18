@@ -30,8 +30,14 @@ export abstract class AbstractRepository<TDocument extends AbstractDocument> {
     ).toJSON() as unknown as TDocument;
   }
 
-  async findOne(filterQuery: FilterQuery<TDocument>): Promise<TDocument> {
-    const document = await this.model.findOne(filterQuery, {}, { lean: true });
+  async findOne(
+    filterQuery: FilterQuery<TDocument>,
+    select: string | string[] | Record<string, number | boolean | object> = '',
+  ): Promise<TDocument> {
+    const document = await this.model
+      .findOne(filterQuery, {}, { lean: true })
+      .select(select)
+      .exec();
 
     if (!document) {
       this.logger.warn('Document not found with filterQuery', filterQuery);

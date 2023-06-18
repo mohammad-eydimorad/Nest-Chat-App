@@ -3,6 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { Response } from 'express';
 import { User } from './users/schemas/user.schema';
+import { AccessTokenResultModel } from './models/access-token.model';
 
 export interface TokenPayload {
   userId: string;
@@ -15,7 +16,7 @@ export class AuthService {
     private readonly jwtService: JwtService,
   ) {}
 
-  async login(user: User, response: Response) {
+  async login(user: User, response: Response): Promise<AccessTokenResultModel> {
     const tokenPayload: TokenPayload = {
       userId: user._id.toHexString(),
     };
@@ -27,14 +28,17 @@ export class AuthService {
 
     const token = this.jwtService.sign(tokenPayload);
 
-    response.cookie('Authentication', token, {
+    response.cookie('Authorization', token, {
       httpOnly: true,
       expires,
     });
+    return {
+      accessToken: token,
+    };
   }
 
   logout(response: Response) {
-    response.cookie('Authentication', '', {
+    response.cookie('Authorization', '', {
       httpOnly: true,
       expires: new Date(),
     });

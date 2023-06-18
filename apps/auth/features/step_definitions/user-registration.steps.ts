@@ -1,15 +1,16 @@
 import * as request from 'supertest';
-import { AuthModule } from '../../../src/auth.module';
-import { CreateUserRequest } from '../../../src/users/dto/create-user.request';
+import { AuthModule } from '../../src/auth.module';
+import { CreateUserRequest } from '../../src/users/dto/create-user.request';
 import mongoose from 'mongoose';
 import { HttpProvider } from '@app/common';
 import { defineFeature, loadFeature } from 'jest-cucumber';
-const feature = loadFeature('../../user-registration.feature', {
+import { INestApplication } from '@nestjs/common';
+const feature = loadFeature('../user-registration.feature', {
   loadRelativePath: true,
   tagFilter: 'not @ignore',
 });
 defineFeature(feature, (test) => {
-  let app: any;
+  let app: INestApplication;
   let user: CreateUserRequest;
   let result: request.Response;
   beforeEach(async () => {
@@ -48,6 +49,39 @@ defineFeature(feature, (test) => {
     });
   });
 
+  test('Email Already Registered', ({ given, when, then }) => {
+    givenTheUserIsOnRegistrationPage(given);
+
+    given(
+      'there is an existing user with the same email address in the system',
+      async () => {
+        user.name = 'valid_name_2';
+        user.email = 'admin2@gmail.com';
+        user.password = '123456789';
+        await request(app.getHttpServer()).post('/auth/users').send(user);
+      },
+    );
+
+    when('the user enters a valid email and password', () => {
+      user.name = 'valid_name_2';
+      user.email = 'admin2@gmail.com';
+      user.password = '123456789';
+    });
+
+    whenSubmitsTheRegistrationForm(when);
+
+    then(
+      'an error message should be displayed indicating that the email is already registered',
+      () => {
+        expect(result.status).toEqual(422);
+        expect(result.body.message).toContain('Email already exists.');
+        expect(result.body._id).toBeFalsy();
+        expect(result.body.name).toBeFalsy();
+        expect(result.body.email).toBeFalsy();
+      },
+    );
+  });
+
   test('Failed user registration', ({ given, when, then }) => {
     givenTheUserIsOnRegistrationPage(given);
 
@@ -68,9 +102,9 @@ defineFeature(feature, (test) => {
     });
 
     then('the user should stay on the registration page', () => {
-      expect(result.body.jwt_token).toBeFalsy();
-      expect(result.body.jwt_refresh_token).toBeFalsy();
-      return;
+      expect(result.body._id).toBeFalsy();
+      expect(result.body.name).toBeFalsy();
+      expect(result.body.email).toBeFalsy();
     });
   });
 

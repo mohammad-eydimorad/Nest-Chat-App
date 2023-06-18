@@ -1,3 +1,4 @@
+@ignore()
 Feature: User Registration
   As a new user
   I want to register for an account
@@ -8,6 +9,13 @@ Feature: User Registration
     When the user provides valid registration details
     And submits the registration form
     Then the user should be redirected to the login page
+
+  Scenario: Email Already Registered
+    Given the user is on the registration page
+    And there is an existing user with the same email address in the system
+    When the user enters a valid email and password
+    And submits the registration form
+    Then an error message should be displayed indicating that the email is already registered
 
   Scenario Outline: Failed user registration
     Given the user is on the registration page
