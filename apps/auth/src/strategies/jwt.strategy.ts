@@ -13,11 +13,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     private readonly usersService: UsersService,
   ) {
     super({
-      jwtFromRequest: ExtractJwt.fromExtractors([
-        (request: any) => {
-          return request?.Authentication;
-        },
-      ]),
+      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       secretOrKey: configService.get('JWT_SECRET'),
     });
   }
@@ -28,7 +24,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
         _id: new Types.ObjectId(userId),
       });
     } catch (err) {
-      throw new UnauthorizedException();
+      throw new UnauthorizedException('Credentials are not valid.');
     }
   }
 }

@@ -1,15 +1,16 @@
 import * as request from 'supertest';
-import { AuthModule } from '../../../src/auth.module';
-import { CreateUserRequest } from '../../../src/users/dto/create-user.request';
+import { AuthModule } from '../../src/auth.module';
+import { CreateUserRequest } from '../../src/users/dto/create-user.request';
 import mongoose from 'mongoose';
 import { HttpProvider } from '@app/common';
 import { defineFeature, loadFeature } from 'jest-cucumber';
-const feature = loadFeature('../../user-registration.feature', {
+import { INestApplication } from '@nestjs/common';
+const feature = loadFeature('../user-registration.feature', {
   loadRelativePath: true,
   tagFilter: 'not @ignore',
 });
 defineFeature(feature, (test) => {
-  let app: any;
+  let app: INestApplication;
   let user: CreateUserRequest;
   let result: request.Response;
   beforeEach(async () => {
@@ -68,9 +69,9 @@ defineFeature(feature, (test) => {
     });
 
     then('the user should stay on the registration page', () => {
-      expect(result.body.jwt_token).toBeFalsy();
-      expect(result.body.jwt_refresh_token).toBeFalsy();
-      return;
+      expect(result.body._id).toBeFalsy();
+      expect(result.body.name).toBeFalsy();
+      expect(result.body.email).toBeFalsy();
     });
   });
 

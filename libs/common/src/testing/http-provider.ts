@@ -12,9 +12,11 @@ export class HttpProvider {
       | DynamicModule
       | Promise<DynamicModule>
       | ForwardReference<any>,
+    providers: any[] = [],
   ) {
     const moduleRef = await Test.createTestingModule({
       imports: [module],
+      providers: providers,
     }).compile();
 
     const app = moduleRef.createNestApplication();

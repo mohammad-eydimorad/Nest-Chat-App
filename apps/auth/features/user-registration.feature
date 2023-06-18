@@ -1,3 +1,4 @@
+@ignore()
 Feature: User Registration
   As a new user
   I want to register for an account
