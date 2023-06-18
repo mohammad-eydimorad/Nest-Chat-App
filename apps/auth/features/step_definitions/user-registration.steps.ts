@@ -49,6 +49,39 @@ defineFeature(feature, (test) => {
     });
   });
 
+  test('Email Already Registered', ({ given, when, then }) => {
+    givenTheUserIsOnRegistrationPage(given);
+
+    given(
+      'there is an existing user with the same email address in the system',
+      async () => {
+        user.name = 'valid_name_2';
+        user.email = 'admin2@gmail.com';
+        user.password = '123456789';
+        await request(app.getHttpServer()).post('/auth/users').send(user);
+      },
+    );
+
+    when('the user enters a valid email and password', () => {
+      user.name = 'valid_name_2';
+      user.email = 'admin2@gmail.com';
+      user.password = '123456789';
+    });
+
+    whenSubmitsTheRegistrationForm(when);
+
+    then(
+      'an error message should be displayed indicating that the email is already registered',
+      () => {
+        expect(result.status).toEqual(422);
+        expect(result.body.message).toContain('Email already exists.');
+        expect(result.body._id).toBeFalsy();
+        expect(result.body.name).toBeFalsy();
+        expect(result.body.email).toBeFalsy();
+      },
+    );
+  });
+
   test('Failed user registration', ({ given, when, then }) => {
     givenTheUserIsOnRegistrationPage(given);
 
