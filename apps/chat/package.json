@@ -1,7 +1,7 @@
 {
-    "name": "auth",
+    "name": "chat",
     "version": "0.0.1",
-    "description": "Auth",
+    "description": "Chat",
     "author": "M.Eydimorad",
     "private": true,
     "license": "UNLICENSED",
