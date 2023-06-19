@@ -20,7 +20,7 @@ import { DatabaseModule } from '@app/common';
         JWT_EXPIRATION: Joi.string().required(),
         MONGODB_URI: Joi.string().required(),
       }),
-      envFilePath: './apps/auth/.env',
+      envFilePath: './.env',
     }),
     JwtModule.registerAsync({
       useFactory: (configService: ConfigService) => ({
