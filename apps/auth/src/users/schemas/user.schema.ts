@@ -14,7 +14,7 @@ export class User extends AbstractDocument {
 }
 
 const UserSchemaDef = SchemaFactory.createForClass(User);
-UserSchemaDef.methods.toJSON = function () {
+UserSchemaDef.methods.toJSON = function (): User {
   const obj = this.toObject();
   delete obj.password;
   return obj;

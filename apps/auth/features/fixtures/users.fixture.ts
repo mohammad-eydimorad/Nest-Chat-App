@@ -19,7 +19,7 @@ export class UsersFixture {
     this.userModel = this.application.get('UserModel');
   }
 
-  async apply() {
+  async apply(): Promise<void> {
     await this.userModel.create({
       ...UsersFixture.user_1,
       password: await PasswordEncoder.encodePassword(

@@ -1,10 +1,11 @@
 import {
   DynamicModule,
   ForwardReference,
+  INestApplication,
   Type,
   ValidationPipe,
 } from '@nestjs/common';
-import { Test } from '@nestjs/testing';
+import { Test, TestingModule } from '@nestjs/testing';
 export class HttpProvider {
   static async createProvider(
     module:
@@ -13,13 +14,13 @@ export class HttpProvider {
       | Promise<DynamicModule>
       | ForwardReference<any>,
     providers: any[] = [],
-  ) {
-    const moduleRef = await Test.createTestingModule({
+  ): Promise<INestApplication> {
+    const moduleRef: TestingModule = await Test.createTestingModule({
       imports: [module],
       providers: providers,
     }).compile();
 
-    const app = moduleRef.createNestApplication();
+    const app: INestApplication = moduleRef.createNestApplication();
     app.useGlobalPipes(new ValidationPipe());
     await app.init();
     return app;

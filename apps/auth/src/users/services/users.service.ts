@@ -4,37 +4,27 @@ import {
   UnprocessableEntityException,
 } from '@nestjs/common';
 
-import { UsersRepository } from './users.repository';
-import { CreateUserRequest } from './dto/create-user.request';
-import { User } from './schemas/user.schema';
-import { PasswordEncoder } from './tools/password-encoder';
+import { UsersRepository } from '../users.repository';
+import { CreateUserDto } from '../dto/create-user.request';
+import { User } from '../schemas/user.schema';
+import { PasswordEncoder } from '../tools/password-encoder';
 
 @Injectable()
 export class UsersService {
   constructor(private usersRepository: UsersRepository) {}
 
-  async createUser(request: CreateUserRequest): Promise<User> {
-    await this.validateCreateUserRequest(request);
+  async createUser(request: CreateUserDto): Promise<User> {
+    const existingUser = await this.usersRepository.checkExist({
+      email: request.email,
+    });
+    if (existingUser) {
+      throw new UnprocessableEntityException('Email already exists.');
+    }
     const user = await this.usersRepository.create({
       ...request,
       password: await PasswordEncoder.encodePassword(request.password),
     });
     return user;
-  }
-
-  private async validateCreateUserRequest(
-    request: CreateUserRequest,
-  ): Promise<void> {
-    let user: User;
-    try {
-      user = await this.usersRepository.findOne({
-        email: request.email,
-      });
-    } catch (err) {}
-
-    if (user) {
-      throw new UnprocessableEntityException('Email already exists.');
-    }
   }
 
   async validateUser(email: string, password: string): Promise<User> {

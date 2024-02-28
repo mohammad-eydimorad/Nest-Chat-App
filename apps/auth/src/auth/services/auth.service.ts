@@ -2,8 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { Response } from 'express';
-import { User } from './users/schemas/user.schema';
-import { AccessTokenResultModel } from './models/access-token.model';
+import { AccessTokenResultModel } from '../interfaces/access-token.model';
+import { User } from '../../users/schemas/user.schema';
 
 export interface TokenPayload {
   userId: string;
@@ -37,7 +37,7 @@ export class AuthService {
     };
   }
 
-  logout(response: Response) {
+  logout(response: Response): void {
     response.cookie('Authorization', '', {
       httpOnly: true,
       expires: new Date(),

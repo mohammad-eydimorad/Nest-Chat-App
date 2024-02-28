@@ -1,6 +1,6 @@
 import * as request from 'supertest';
 import { AuthModule } from '../../src/auth.module';
-import { CreateUserRequest } from '../../src/users/dto/create-user.request';
+import { CreateUserDto } from '../../src/users/dto/create-user.request';
 import mongoose from 'mongoose';
 import { HttpProvider } from '@app/common';
 import { defineFeature, loadFeature } from 'jest-cucumber';
@@ -11,17 +11,17 @@ const feature = loadFeature('../user-registration.feature', {
 });
 defineFeature(feature, (test) => {
   let app: INestApplication;
-  let user: CreateUserRequest;
+  let user: CreateUserDto;
   let result: request.Response;
   beforeEach(async () => {
     app = await HttpProvider.createProvider(AuthModule);
   });
-  const givenTheUserIsOnRegistrationPage = (given) => {
+  const givenTheUserIsOnRegistrationPage = (given: any): void => {
     given('the user is on the registration page', async () => {
-      user = new CreateUserRequest();
+      user = new CreateUserDto();
     });
   };
-  const whenSubmitsTheRegistrationForm = (when) => {
+  const whenSubmitsTheRegistrationForm = (when: any): void => {
     when('submits the registration form', async () => {
       result = await request(app.getHttpServer())
         .post('/auth/users')

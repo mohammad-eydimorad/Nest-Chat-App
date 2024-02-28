@@ -6,7 +6,7 @@ import {
   MinLength,
 } from 'class-validator';
 
-export class CreateUserRequest {
+export class CreateUserDto {
   @IsNotEmpty()
   @IsString()
   name: string;
